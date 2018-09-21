@@ -1,0 +1,35 @@
+version: "3"
+
+services:
+  app:
+    build:
+      context: ./app 
+      dockerfile: Dockerfile
+    image: app
+    command: node index.js
+    ports:
+     - "3000:3000"
+    stdin_open: true
+    tty: true
+  api:
+    build:
+      context: ./api 
+      dockerfile: Dockerfile
+    image: api
+    command: node index.js
+    ports:
+     - "3001:3000"
+    stdin_open: true
+    tty: true
+  web:
+    image: nginx
+    volumes:
+      - ./web/etc/nginx/conf.d:/etc/nginx/conf.d
+    ports:
+      - "80:80"
+    links:
+      - api:api
+      - app:app
+    command: /bin/bash -c "exec nginx -g 'daemon off;'"
+    stdin_open: true
+    tty: true
